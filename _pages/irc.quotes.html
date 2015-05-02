@@ -118,6 +118,19 @@ title: Quotes
             $("#quotes").find(".quote-text").highlight(nick);
         }
 
+        function filterById(id) {
+            filteredQuotes = {};
+
+            $.each(quotes, function(key, quote) {
+                if (quote.id === id) {
+                    filteredQuotes[key] = quote;
+                }
+            });
+
+            showQuotes(filteredQuotes);
+            $("#quotes").find(".quote-id").highlight(id.toString());
+        }
+
         function filterByText(filter) {
             filteredQuotes = {};
 
@@ -132,7 +145,15 @@ title: Quotes
         }
 
         searchBar.keyup(function() {
-            filterByText($(this).val());
+            var filter = $(this).val();
+
+            if (/^\d+$/.test(filter.replace('#', ''))) {
+                filterById(parseInt(filter));
+            }
+            else
+            {
+                filterByText(filter);
+            }
         });
     </script>
 {% endcontentfor %}
