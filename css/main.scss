@@ -1,0 +1,25 @@
+---
+---
+
+@import "variables";
+@import "bootstrap/_bootstrap.scss";
+@import "bootswatch";
+
+@import "footer";
+@import "header";
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container .text-muted {
+  margin: 20px 0;
+}
+
+code {
+  font-size: 80%;
+}
+
+a, a:focus {
+  outline: 0;
+}

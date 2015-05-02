@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+<body>
+    {% include nav.html %}
+    <div class="container">
+        {% include header.html %}
+        {{ content }}
+    </div>
+
+    {% include footer.html %}
+
+    <script src="{{ '/js/jquery-1.11.2.min.js' | prepend: site.baseurl }}"></script>
+    <script src="{{ '/js/bootstrap/bootstrap.min.js' | prepend: site.baseurl }}"></script>
+
+    {% contentblock js %}
+</body>
+</html>

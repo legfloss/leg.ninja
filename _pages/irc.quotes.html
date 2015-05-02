@@ -1,0 +1,88 @@
+---
+permalink: /irc/quotes/
+title: Quotes
+---
+
+<style>
+    #quotes * {
+        font-size: small;
+    }
+
+    .pre {
+        font-family: Menlo, Monaco, "Courier New", monospace;
+        white-space: pre-wrap;
+        padding: 0 0 20px 0;
+        overflow: hidden;
+    }
+
+    #search {
+        font-size: medium;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .highlight {
+        background-color: yellow;
+    }
+</style>
+
+<input type="text" id="search" placeholder="Procurar" autofocus="autofocus" class="form-control"/>
+<div id="quotes">
+    Loading...
+    <noscript>Javascript é necessário para carregar esta página :(</noscript>
+</div>
+
+{% contentfor js %}
+    <script id="quote-tpl" type="x-tmpl-mustache">
+<div class="pre"><span class="quote-id">#[[ id ]]</span> por <span class="quote-author">[[ author ]]</span> <span class="quote-date" title="[[ formattedDate ]]">[[ humanDate ]]</span>
+<span class="quote-text">[[ text ]]</span>
+</div>
+    </script>
+
+    <script src="{{ '/js/moment-with-locales-2.10.2.min.js' | prepend: site.baseurl }}"></script>
+    <script src="{{ '/js/mustache-0.8.1.min.js' | prepend: site.baseurl }}"></script>
+    <script src="{{ '/js/jquery.highlight.js' | prepend: site.baseurl }}"></script>
+
+    <script>
+        var quoteDiv = $("#quotes");
+        var quoteTpl = $("#quote-tpl").html();
+        var searchBar = $("#search")
+
+        Mustache.tags = ["[[", "]]"];
+        Mustache.parse(quoteTpl);
+        moment.locale('pt');
+
+        var quotes = {}
+        $.getJSON('//irc.leg.ninja/quotes/quotes.json', function(data) {
+            quotes = data;
+            $.each(quotes, function(id, quote) {
+                quote.humanDate = moment(quote.date*1000).fromNow();
+                quote.formattedDate = moment(quote.date*1000).format('LLLL');
+            });
+
+            showQuotes(quotes);
+        });
+
+        function showQuotes(quoteList) {
+            quoteDiv.html("");
+
+            $.each(quoteList, function(id, quote) {
+                quoteDiv.prepend(Mustache.render(quoteTpl, quote));
+            });
+        }
+
+        searchBar.keyup(function() {
+            filteredQuotes = {}
+            filter = $(this).val();
+
+            $.each(quotes, function(key, quote) {
+                if (quote.text.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
+                    filteredQuotes[key] = quote;
+                }
+            });
+
+            showQuotes(filteredQuotes);
+            $("#quotes .quote-text").highlight(filter);
+        });
+    </script>
+{% endcontentfor %}
