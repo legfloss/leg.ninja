@@ -90,7 +90,7 @@ title: Quotes
                 return b.count - a.count;
             }), function(id, nick) {
                 if (nick.count > 2) {
-                    nicksDiv.append(Mustache.render("<a href='#' onclick='filterByNick(\"[[ casedNick ]]\")' class='list-group-item'>[[ casedNick ]] ([[ count ]])</a>", nick))
+                    nicksDiv.append(Mustache.render("<a href='#' onclick='filterByNick(\"[[ casedNick ]]\"); return false' class='list-group-item'>[[ casedNick ]] ([[ count ]])</a>", nick))
                 }
             });
 
