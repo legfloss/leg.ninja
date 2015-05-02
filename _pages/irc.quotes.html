@@ -26,15 +26,24 @@ title: Quotes
     }
 </style>
 
-<input type="text" id="search" placeholder="Procurar" autofocus="autofocus" class="form-control"/>
-<div id="quotes">
-    Loading...
-    <noscript>Javascript é necessário para carregar esta página :(</noscript>
+<div class="row row-offcanvas row-offcanvas-right">
+    <input type="text" id="search" placeholder="Procurar" autofocus="autofocus" class="form-control"/>
+    <div class="col-xs-9">
+        <div id="quotes">
+            Loading...
+            <noscript>Javascript é necessário para carregar esta página :(</noscript>
+        </div>
+    </div>
+    <div class="col-xs-3 sidebar-offcanvas" id="sidebar">
+        <div id="nicks" class="list-group">
+
+        </div>
+    </div>
 </div>
 
 {% contentfor js %}
     <script id="quote-tpl" type="x-tmpl-mustache">
-<div class="pre"><span class="quote-id">#[[ id ]]</span> por <span class="quote-author">[[ author ]]</span> <span class="quote-date" title="[[ formattedDate ]]">[[ humanDate ]]</span>
+<div class="pre"><span class="quote-id">#[[ id ]]</span> adicionado por <span class="quote-author">[[ author ]]</span> <span class="quote-date" title="[[ formattedDate ]]">[[ humanDate ]]</span>
 <span class="quote-text">[[ text ]]</span>
 </div>
     </script>
@@ -45,19 +54,44 @@ title: Quotes
 
     <script>
         var quoteDiv = $("#quotes");
+        var nicksDiv = $("#nicks");
         var quoteTpl = $("#quote-tpl").html();
-        var searchBar = $("#search")
+        var searchBar = $("#search");
 
         Mustache.tags = ["[[", "]]"];
         Mustache.parse(quoteTpl);
         moment.locale('pt');
 
-        var quotes = {}
+        var quotes = {};
+        var nicks = {};
+
+        var nickRegxp = /(\d\d:\d\d(:\d\d)?)?.+?<?[+%@&~]?(\S+)(>|.+\||> |\b)/;
+
         $.getJSON('//irc.leg.ninja/quotes/quotes.json', function(data) {
             quotes = data;
             $.each(quotes, function(id, quote) {
                 quote.humanDate = moment(quote.date*1000).fromNow();
                 quote.formattedDate = moment(quote.date*1000).format('LLLL');
+
+                var match = nickRegxp.exec(quote.text);
+                quote.nick = match ? match[3] : null;
+
+                nickInfo = nicks[quote.nick.toLowerCase()];
+                nicks[quote.nick.toLowerCase()] = nickInfo ? {
+                    casedNick: quote.nick,
+                    count: nickInfo.count + 1
+                } : {
+                    casedNick: quote.nick,
+                    count: 1
+                }
+            });
+
+            $.each(Object.keys(nicks).map(function(k){return nicks[k]}).sort(function(a, b) {
+                return b.count - a.count;
+            }), function(id, nick) {
+                if (nick.count > 2) {
+                    nicksDiv.append(Mustache.render("<a href='#' onclick='filterByNick(\"[[ casedNick ]]\")' class='list-group-item'>[[ casedNick ]] ([[ count ]])</a>", nick))
+                }
             });
 
             showQuotes(quotes);
@@ -71,9 +105,21 @@ title: Quotes
             });
         }
 
-        searchBar.keyup(function() {
-            filteredQuotes = {}
-            filter = $(this).val();
+        function filterByNick(nick) {
+            filteredQuotes = {};
+
+            $.each(quotes, function(key, quote) {
+                if (quote.nick.toLowerCase() === nick.toLowerCase()) {
+                    filteredQuotes[key] = quote;
+                }
+            });
+
+            showQuotes(filteredQuotes);
+            $("#quotes").find(".quote-text").highlight(nick);
+        }
+
+        function filterByText(filter) {
+            filteredQuotes = {};
 
             $.each(quotes, function(key, quote) {
                 if (quote.text.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
@@ -82,7 +128,11 @@ title: Quotes
             });
 
             showQuotes(filteredQuotes);
-            $("#quotes .quote-text").highlight(filter);
+            $("#quotes").find(".quote-text").highlight(filter);
+        }
+
+        searchBar.keyup(function() {
+            filterByText($(this).val());
         });
     </script>
 {% endcontentfor %}
