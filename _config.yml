@@ -14,6 +14,7 @@ sass:
 nav:
   IRC: /irc
   Quotes: /irc/quotes
+  Radio: /irc/radio
   Código: https://github.com/legfloss
   Contactos: /contactos
 

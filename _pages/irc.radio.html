@@ -1,0 +1,52 @@
+---
+title: "Radio"
+permalink: /irc/radio/
+
+stream_link: "http://85.245.102.24:8000"
+proxy_link: "https://leg.ninja/radioproxy"
+stream_mount: "/live"
+---
+
+Rádio do #ptchan, administrada pelo <code>basedg0d</code>.
+
+<div class="well" style="margin-top: 1em">
+    <audio controls autoplay="autoplay">
+        <source src="{{ page.stream_link }}{{ page.stream_mount }}" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <div id="now-playing" style="margin-top: 1em"></div>
+</div>
+
+<hr>
+
+<a href="{{ page.stream_link }}{{ page.stream_mount }}">Stream MP3</a>
+
+{% contentfor js %}
+<script src="{{ '/js/mustache-0.8.1.min.js' | prepend: site.baseurl }}"></script>
+
+<script id="now-playing-tpl" type="x-tmpl-mustache">
+<strong>A tocar: </strong>
+[[ source.title ]] | [[ source.genre ]] | [[ source.ice-bitrate]]kbps
+
+<br>
+
+<strong>Ouvintes: </strong>
+[[ source.listeners ]]
+</script>
+
+<script>
+    var nowPlayingDiv = $("#now-playing");
+    var nowPlayingTpl = $("#now-playing-tpl").html();
+
+    Mustache.tags = ["[[", "]]"];
+    Mustache.parse(nowPlayingTpl);
+
+    setInterval(function() {
+        $.getJSON("{{ page.proxy_link }}/status-json.xsl?mount={{ page.stream_mount }}", function(data) {
+            console.log(data);
+
+            nowPlayingDiv.html(Mustache.render(nowPlayingTpl, data.icestats));
+        });
+    }, 2000);
+</script>
+{% endcontentfor %}
