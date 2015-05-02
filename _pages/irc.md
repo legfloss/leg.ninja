@@ -8,6 +8,12 @@ extra_css:
 
 Esta página é dedicada a informações acerca do canal #ptchan na rede [Rizon](http://rizon.net).
 
+---
+
+{% include irc.connect.html %}
+
+---
+
 TOC
 ---
 

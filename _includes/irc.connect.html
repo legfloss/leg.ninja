@@ -1,0 +1,62 @@
+<form class="form-inline irc-connect-form">
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control irc-connect-nick" placeholder="Inserir um nick...">
+            <span class="input-group-btn">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="connectKiwi(getNick(this))">Ligar</button>
+                    <button type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a onclick="connectKiwi(getNick(this))">KiwiIRC</a></li>
+                        <li><a onclick="connectQweb(getNick(this))">QwebIRC</a></li>
+                        <li><a onclick="connectMibbit(getNick(this))">Mibbit</a></li>
+                    </ul>
+                </div>
+            </span>
+        </div>
+    </div>
+</form>
+
+
+
+{% contentfor js %}
+<script>
+    function getNick(obj) {
+        return $(obj).closest(":has(.irc-connect-nick)").find('.irc-connect-nick').val();
+    }
+
+    function connectKiwi(nick) {
+        nick = nick == "" ? "danone?" : nick;
+
+        window.open("https://kiwiirc.com/client/irc.rizon.net/?nick=" + nick + "#ptchan");
+        return false;
+    }
+
+    function connectQweb(nick) {
+        nick = nick == "" ? "danone....." : nick;
+
+        window.open("https://qchat.rizon.net/?channels=ptchan&nick=" + nick);
+        return false;
+    }
+
+    function connectMibbit(nick) {
+        nick = nick == "" ? "danone%3F%3F%3F%3F%3F" : nick;
+
+        window.open("http://widget.mibbit.com/" +
+            "?server=rizon.mibbit.org" +
+            "&autoConnect=true" +
+            "&noServerTab=1" +
+            "&channel=%23ptchan" +
+            "&nick=" + nick);
+
+        return false;
+    }
+
+    $(".irc-connect-form").submit(function() {
+        connectKiwi(getNick(this));
+        return false;
+    })
+</script>
+{% endcontentfor %}
