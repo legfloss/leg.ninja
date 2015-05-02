@@ -13,6 +13,7 @@ sass:
 # Navigation
 nav:
   IRC: /irc
+  Quotes: /irc/quotes
   Código: https://github.com/legfloss
   Contactos: /contactos
 
