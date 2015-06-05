@@ -69,7 +69,7 @@ title: Quotes
 
         var nickRegxp = /(\d\d:\d\d(:\d\d)?)?.+?<?[+%@&~]?(\S+)(>|.+\||> |\b)/;
 
-        $.getJSON('//irc.leg.ninja/quotes/quotes.json', function(data) {
+        $.getJSON('//european.shitposting.agency/quotes/quotes.json', function(data) {
             quotes = data;
             $.each(quotes, function(id, quote) {
                 quote.humanDate = moment(quote.date*1000).fromNow();
